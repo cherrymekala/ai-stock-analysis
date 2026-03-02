@@ -1,0 +1,10 @@
+pandas
+yfinance
+requests
+streamlit
+discord.py
+slack-sdk
+schedule
+python-dotenv
+sentence-transformers
+faiss-cpu
