@@ -1,0 +1,49 @@
+name: ci
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Deterministic unit tests only: no model download, no network, seconds
+      # to run. They cover filing parsing, chunking, BM25, RRF, MMR, the
+      # metrics, the output checks and every agent guard — the parts that are
+      # ordinary code and deserve ordinary tests.
+      - run: pip install numpy requests python-dotenv pytest
+      - run: python -m pytest tests/ -q
+
+  labels:
+    # A labelled set is only as good as its labels. This asserts every
+    # must_include string actually appears in the section it is labelled
+    # against, so a typo cannot become a permanent false negative.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install numpy requests python-dotenv
+      - run: python verify_golden.py
+
+  eval:
+    # The eval suite is the integration test: it downloads models and takes
+    # minutes, so it runs on demand and nightly rather than on every commit —
+    # the same reasoning as any slow integration suite.
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python cli.py eval --json eval/results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eval-results
+          path: eval/results.json

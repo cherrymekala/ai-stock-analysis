@@ -1,9 +1,13 @@
 __pycache__/
 *.pyc
-.env
 venv/
+.venv/
+.env
 .env.local
 data/
 *.faiss
 *.npy
-.DS_Store.env
+.DS_Store
+.cache/
+.pytest_cache/
+eval/results*.json

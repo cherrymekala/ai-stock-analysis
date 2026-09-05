@@ -1,10 +1,26 @@
+# --- core pipeline -------------------------------------------------------
+numpy>=1.26
+requests>=2.31
+python-dotenv>=1.0
+
+# --- local embeddings + cross-encoder reranking --------------------------
+# No API key, runs in-process. Omit these and the pipeline degrades to a
+# TF-IDF embedder and a lexical reranker: worse answers, but everything still
+# runs, and the unit tests need neither.
+sentence-transformers>=3.0
+
+# --- optional: hosted generation ----------------------------------------
+# Set OPENROUTER_API_KEY to enable `--llm`. Retrieval metrics never need it.
+openai>=1.30
+
+# --- the original daily-report app (main.py, streamlit_app.py, bot) ------
 pandas
 yfinance
-requests
 streamlit
 discord.py
 slack-sdk
 schedule
-python-dotenv
-sentence-transformers
 faiss-cpu
+
+# --- dev -----------------------------------------------------------------
+pytest>=8.0
